@@ -9,16 +9,6 @@ var request = require("request");
 
 //console.log(keys)
 
-//grab input index [2-3]
-var userArgs = process.argv;
-
-var input = ""; 
-
-for (var i = 2; i < userArgs.length; i++) {
-
-  
-  input = input + " " + nodeArgs[i];
-}
  
 
 switch (action){
@@ -39,6 +29,17 @@ switch (action){
 	break;
 }
 
+//grab input index [2-3]
+var userArgs = process.argv;
+
+var input = ""; 
+
+for (var i = 2; i < userArgs.length; i++) {
+
+  
+  input = input + " " + nodeArgs[i];
+
+
 /*
 ### What Each Command Should Do
 
@@ -50,7 +51,7 @@ switch (action){
 
 function myTweets(){
 
-var call = new Twitter(keys);
+var call = new Twitter(keys.twitterKeys);
 
 var params = {screen_name: 'relicrust'};
 client.get('statuses/user_timeline', params, function(error, tweets, response) {
@@ -77,6 +78,10 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
 =======*/
 function spotifySong (){
 
+  if (input === "" || input = null){
+    input = "The Sign";
+  }
+
 
  
 spotify.search({ type: 'track', query: input }, function(err, data) {
@@ -99,8 +104,6 @@ spotify.search({ type: 'track', query: input }, function(err, data) {
 
 });
 }
-
-
 
 /*=====
 3. `node liri.js movie-this '<movie name here>'`
@@ -163,6 +166,7 @@ fs.readFile("random.txt", "utf8", function(error, data){
 	submit = dataArr.slice(1).join(" ");
 
 
-})
+});
 
-}
+}//close doThis function 
+}//close input for loop
