@@ -9,20 +9,32 @@ var request = require("request");
 
 //console.log(keys)
 
+//grab input index [2-3]
+var userArgs = process.argv;
+
+var input = ""; 
+
+for (var i = 2; i < userArgs.length; i++) {
+
+  
+  input = input + " " + nodeArgs[i];
+}
+ 
+
 switch (action){
-	case "myTweets":
+	case "my-tweets":
 	myTweets();
 	break;
 
-	case "spotifySong":
+	case "spotify-this-song":
 	spotifySong();
 	break;
 
-	case "movieThis":
+	case "movie-this":
 	movieThis();
 	break;
 
-	case "doThis":
+	case "do-what-it-says":
 	doThis();
 	break;
 }
@@ -38,11 +50,17 @@ switch (action){
 
 function myTweets(){
 
-Twitter.keys.get('statuses/user_timeline', params, function(error, tweets, response) {
+var call = new Twitter(keys);
+
+var params = {screen_name: 'relicrust'};
+client.get('statuses/user_timeline', params, function(error, tweets, response) {
   if (!error) {
+  	
     console.log(tweets);
   }
 });
+
+
 }
 /*==========
 2. `node liri.js spotify-this-song '<song name here>'`
@@ -61,17 +79,26 @@ function spotifySong (){
 
 
  
-spotify.search({ type: 'track', query: 'dancing in the moonlight' }, function(err, data) {
+spotify.search({ type: 'track', query: input }, function(err, data) {
     if ( err ) {
         console.log('Error occurred: ' + err);
         return;
     }
- 
-    // Do something with 'data' 
-});
-
+ 	
+   	for (var i = 0; i < data.tracks.items.length; i++) {
+   		//console.log(data.tracks.items[i])
+   		if(data.tracks.items[i].album.album_type === "album"){
+   			index = i; 
+   			console.log("Artists: " + data.tracks.items[index].album.artists[0].name);
+            console.log("Song's track: " + data.tracks.items[index].name);
+            console.log("Preview link: " + data.tracks.items[index].preview_url);
+            console.log("Album title: " + data.tracks.items[index].album.name);
+            return;	
+        }
 }
 
+});
+}
 
 
 
@@ -96,12 +123,28 @@ spotify.search({ type: 'track', query: 'dancing in the moonlight' }, function(er
      * It's on Netflix!
 =========*/
 
-var movieName = progess.argv[2];
-var movieURL = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&r=json";
+function movieThis(){
 
-console.log(movieURL);
+if (input === null || input === ""){
+	input === "Mr.Nobody";
+}
+  request("http://www.omdbapi.com/?t=" + input + "&y=&plot=short&r=json", function(error, response, body) {
+ 
+         
+         if (!error && response.statusCode === 200) {
+          
+             console.log("Title: " + JSON.parse(body).Title);
+             console.log("Released Date: " + JSON.parse(body).Released);
+             console.log("Rating: " + JSON.parse(body).imdbRating);
+             console.log("Country produced in: " + JSON.parse(body).Country);
+             console.log("Language: " + JSON.parse(body).Language);
+             console.log("Short Summary: " + JSON.parse(body).Plot);
+             console.log("Actors: " + JSON.parse(body).Actors);
+             console.log("URL: http://www.imdb.com/title/" + JSON.parse(body).imdbID);
+         }
+    });
 
-
+}
 
 /*=========
 4. `node liri.js do-what-it-says`
@@ -110,4 +153,16 @@ console.log(movieURL);
      * Feel free to change the text in that document to test out the feature for other commands.
 
      */
+function doThis(){
 
+var fs = require("fs");
+
+fs.readFile("random.txt", "utf8", function(error, data){
+	var dataArr = data.spit(",");
+	input = dataArr[0];
+	submit = dataArr.slice(1).join(" ");
+
+
+})
+
+}
